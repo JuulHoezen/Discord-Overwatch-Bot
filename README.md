@@ -45,5 +45,10 @@ OverFast API levert heroes, maps, gamemodes en spelersprofielen; seizoenen en
 events komen uit de **Overwatch Wiki (community-data)**. Zie
 [bot/README.md](bot/README.md) voor de details en de beperkingen.
 
-De oude Discord-voorbeeldapp die in deze map zat (`app.js`, `examples/`,
-`assets/`) staat nog in de git-historie, maar wordt nergens meer gebruikt.
+De oude Discord-voorbeeldapp die in deze map zat (`app.js`, `commands.js`,
+`game.js`, `utils.js`, `examples/`, `assets/`, `renovate.json`) is verwijderd. Staat
+nog in een eerdere commit, dus terug te halen met bijvoorbeeld:
+
+```bash
+git restore <commit>^ -- app.js utils.js game.js commands.js examples assets
+```
