@@ -1,0 +1,252 @@
+{
+  "generated_at": "2026-10-19T11:26:13.418Z",
+  "source": "https://overwatch.fandom.com/wiki/Season/2026 (Overwatch Wiki, community-data - geen officiele Blizzard-bron)",
+  "source_page": "Season/2026",
+  "arc": {
+    "name": "Reign of Talon",
+    "page": "Season/2026",
+    "year": 2026,
+    "season_count": 6,
+    "game_season_offset": 20
+  },
+  "seasons": [
+    {
+      "index": 1,
+      "name": "Conquest",
+      "title": "Season 1: Conquest",
+      "start": "2026-02-10",
+      "end": "2026-04-14",
+      "start_precision": "day",
+      "end_precision": "day",
+      "theme": "Talon and attack on Watchpoint: Gibraltar",
+      "heroes": [
+        {
+          "naam": "Domina",
+          "rol": "Tank"
+        },
+        {
+          "naam": "Anran",
+          "rol": "Damage"
+        },
+        {
+          "naam": "Emre",
+          "rol": "Damage"
+        },
+        {
+          "naam": "Mizuki",
+          "rol": "Support"
+        },
+        {
+          "naam": "Jetpack Cat",
+          "rol": "Support"
+        }
+      ],
+      "events": [
+        {
+          "naam": "Catch-A-Mari",
+          "start": null,
+          "end": null,
+          "precisie": null
+        },
+        {
+          "naam": "Conquest meta event",
+          "start": null,
+          "end": null,
+          "precisie": null
+        },
+        {
+          "naam": "Underwatch",
+          "start": null,
+          "end": null,
+          "precisie": null
+        },
+        {
+          "naam": "Shgyrq: Emre vs Emre",
+          "start": null,
+          "end": null,
+          "precisie": null
+        }
+      ],
+      "collaborations": [
+        {
+          "naam": "Overwatch x Hello Kitty and Friends"
+        },
+        {
+          "naam": "Overwatch x Project YoRHa"
+        }
+      ],
+      "maps": [],
+      "map_reworks": []
+    },
+    {
+      "index": 2,
+      "name": "Summit",
+      "title": "Season 2: Summit",
+      "start": "2026-04-14",
+      "end": "2026-06-16",
+      "start_precision": "day",
+      "end_precision": "day",
+      "theme": "Talon's attack on Watchpoint: Grand Mesa",
+      "heroes": [
+        {
+          "naam": "Sierra",
+          "rol": "Damage"
+        }
+      ],
+      "events": [
+        {
+          "naam": "Operation: Grand Mesa",
+          "start": null,
+          "end": null,
+          "precisie": null
+        },
+        {
+          "naam": "Overwatch 10-Year Anniversary",
+          "start": null,
+          "end": null,
+          "precisie": null
+        }
+      ],
+      "collaborations": [
+        {
+          "naam": "Overwatch x LE SSERAFIM"
+        },
+        {
+          "naam": "Overwatch x Hatred's Reckoning"
+        }
+      ],
+      "maps": [
+        {
+          "naam": "Lijiang Tower Night Market"
+        }
+      ],
+      "map_reworks": []
+    },
+    {
+      "index": 3,
+      "name": "Into the Tiger's Den",
+      "title": "Season 3: Into the Tiger's Den",
+      "start": "2026-06-16",
+      "end": "2026-08-11",
+      "start_precision": "day",
+      "end_precision": "day",
+      "theme": "Talon partnering with the Hashimoto clan",
+      "heroes": [
+        {
+          "naam": "Shion",
+          "rol": "Damage"
+        }
+      ],
+      "events": [
+        {
+          "naam": "Anima Strike",
+          "start": null,
+          "end": null,
+          "precisie": null
+        },
+        {
+          "naam": "Community Crafted",
+          "start": null,
+          "end": null,
+          "precisie": null
+        },
+        {
+          "naam": "Excavation Initiative",
+          "start": null,
+          "end": null,
+          "precisie": null
+        },
+        {
+          "naam": "Summer Games",
+          "start": "2026-07-14",
+          "end": "2026-07-28",
+          "precisie": "day"
+        }
+      ],
+      "collaborations": [
+        {
+          "naam": "Overwatch x YOASOBI"
+        }
+      ],
+      "maps": [
+        {
+          "naam": "Neon Junction (Hybrid)"
+        }
+      ],
+      "map_reworks": []
+    },
+    {
+      "index": 4,
+      "name": "Heroes of Busan",
+      "title": "Season 4: Heroes of Busan",
+      "start": "2026-08-11",
+      "end": "2026-10-06",
+      "start_precision": "day",
+      "end_precision": "day",
+      "theme": "Busan being attacked by Talon and the Junkers",
+      "heroes": [
+        {
+          "naam": "D.Mon",
+          "rol": "Tank"
+        }
+      ],
+      "events": [],
+      "collaborations": [
+        {
+          "naam": "LE SSERAFIM"
+        }
+      ],
+      "maps": [],
+      "map_reworks": [
+        {
+          "naam": "Busan"
+        },
+        {
+          "naam": "Eichenwalde"
+        },
+        {
+          "naam": "Paraíso"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "name": "A Grim Doctrine",
+      "title": "Season 5: A Grim Doctrine",
+      "start": "2026-10-06",
+      "end": "2026-12",
+      "start_precision": "day",
+      "end_precision": "month",
+      "theme": null,
+      "heroes": [
+        {
+          "naam": "Doctrine",
+          "rol": "Support"
+        }
+      ],
+      "events": [],
+      "collaborations": [],
+      "maps": [
+        {
+          "naam": "Watchpoint: Grímsvötn (Escort)"
+        }
+      ],
+      "map_reworks": []
+    },
+    {
+      "index": 6,
+      "name": "TBA",
+      "title": "Season 6: TBA",
+      "start": "2026-12",
+      "end": "2027-02",
+      "start_precision": "month",
+      "end_precision": "month",
+      "theme": null,
+      "heroes": [],
+      "events": [],
+      "collaborations": [],
+      "maps": [],
+      "map_reworks": []
+    }
+  ]
+}
