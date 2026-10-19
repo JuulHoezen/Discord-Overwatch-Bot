@@ -150,6 +150,7 @@ function parseSeizoenen(tekst) {
     const collabs = blokVan(blok, /'''\s*(?:New |Returning )?Collaborations?:?\s*'''/i).map((r) => ({ naam: normaliseerEventNaam(r) }));
     const maps = blokVan(blok, /'''\s*New Maps?:?\s*'''/i).map((r) => ({ naam: r }));
     const mapReworks = blokVan(blok, /'''\s*Map Reworks?:?\s*'''/i).map((naam) => ({ naam }));
+    const heroReworks = blokVan(blok, /'''\s*Hero Reworks?:?\s*'''/i).map((naam) => ({ naam }));
 
     seizoenen.push({
       index: Number(m[1]),
@@ -164,6 +165,7 @@ function parseSeizoenen(tekst) {
       collaborations: collabs,
       maps,
       map_reworks: mapReworks,
+      hero_reworks: heroReworks,
     });
   });
 

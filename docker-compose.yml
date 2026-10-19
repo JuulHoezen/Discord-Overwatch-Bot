@@ -1,0 +1,19 @@
+services:
+  bot:
+    build: .
+    image: overwatch-bot
+    container_name: overwatch-bot
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      # De seizoensdata op de host, zodat een sync bewaard blijft als de
+      # container opnieuw wordt gebouwd.
+      - ./bot/data:/app/bot/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+# Wekelijkse sync vanaf de host (cron):
+#   0 4 * * 0 cd /opt/overwatch && docker compose run --rm bot node bot/lib/sync.js

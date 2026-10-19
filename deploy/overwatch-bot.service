@@ -1,0 +1,24 @@
+[Unit]
+Description=Overwatch Discord-bot (1KEY)
+Documentation=file:/opt/overwatch/bot/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=owbot
+Group=owbot
+WorkingDirectory=/opt/overwatch
+ExecStart=/usr/bin/node bot/index.js
+Restart=always
+RestartSec=5
+
+# De bot hoeft nergens bij: geen root, geen schrijfrechten buiten zijn eigen map.
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

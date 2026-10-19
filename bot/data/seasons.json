@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T11:26:13.418Z",
+  "generated_at": "2026-10-19T11:43:39.528Z",
   "source": "https://overwatch.fandom.com/wiki/Season/2026 (Overwatch Wiki, community-data - geen officiele Blizzard-bron)",
   "source_page": "Season/2026",
   "arc": {
@@ -76,7 +76,8 @@
         }
       ],
       "maps": [],
-      "map_reworks": []
+      "map_reworks": [],
+      "hero_reworks": []
     },
     {
       "index": 2,
@@ -120,7 +121,8 @@
           "naam": "Lijiang Tower Night Market"
         }
       ],
-      "map_reworks": []
+      "map_reworks": [],
+      "hero_reworks": []
     },
     {
       "index": 3,
@@ -173,7 +175,8 @@
           "naam": "Neon Junction (Hybrid)"
         }
       ],
-      "map_reworks": []
+      "map_reworks": [],
+      "hero_reworks": []
     },
     {
       "index": 4,
@@ -207,7 +210,8 @@
         {
           "naam": "Paraíso"
         }
-      ]
+      ],
+      "hero_reworks": []
     },
     {
       "index": 5,
@@ -231,7 +235,15 @@
           "naam": "Watchpoint: Grímsvötn (Escort)"
         }
       ],
-      "map_reworks": []
+      "map_reworks": [],
+      "hero_reworks": [
+        {
+          "naam": "Roadhog"
+        },
+        {
+          "naam": "Sombra"
+        }
+      ]
     },
     {
       "index": 6,
@@ -246,7 +258,8 @@
       "events": [],
       "collaborations": [],
       "maps": [],
-      "map_reworks": []
+      "map_reworks": [],
+      "hero_reworks": []
     }
   ]
 }

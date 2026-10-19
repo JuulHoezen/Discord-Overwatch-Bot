@@ -65,6 +65,7 @@ export function seizoenEmbed(seizoen, { nu = new Date(), bron = null, totaal = n
   if (seizoen.heroes?.length) embed.addFields({ name: 'Nieuwe hero(s)', value: regel(seizoen.heroes) });
   if (seizoen.maps?.length) embed.addFields({ name: 'Nieuwe map(s)', value: regel(seizoen.maps) });
   if (seizoen.map_reworks?.length) embed.addFields({ name: 'Map-herwerkingen', value: regel(seizoen.map_reworks) });
+  if (seizoen.hero_reworks?.length) embed.addFields({ name: 'Hero-herwerkingen', value: regel(seizoen.hero_reworks) });
   if (seizoen.events?.length) embed.addFields({ name: 'Events', value: eventsTekst(seizoen.events) });
   if (seizoen.collaborations?.length) embed.addFields({ name: 'Samenwerkingen', value: regel(seizoen.collaborations) });
 
