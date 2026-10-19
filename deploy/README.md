@@ -1,5 +1,10 @@
 # Live zetten zonder je eigen pc aan te laten staan
 
+**Let op:** wil je het gratis en zonder creditcard, gebruik dan de
+Cloudflare-variant in [../worker/README.md](../worker/README.md). Dat is de
+route die geen enkele machine nodig heeft. De opties hieronder vragen een
+VM/LXC/server (bij een hostingpartij meestal met creditcard).
+
 **Discord host zelf geen bots.** Er is geen knop "deploy naar Discord". Je hebt twee smaken:
 
 1. **Altijd-aan machine** (VPS, LXC, Raspberry Pi, NAS): het bestaande bot-project draait als

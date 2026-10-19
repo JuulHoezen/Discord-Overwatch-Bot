@@ -1,17 +1,15 @@
 /**
  * Client voor de OverFast API (https://overfast-api.tekrop.fr).
  *
- * Wat deze API WEL levert: heroes, maps, gamemodes, rollen, perks en
- * spelerstatistieken (gescrapet van Blizzard).
- * Wat deze API NIET levert: seizoenen, seizoensdata, events, countdowns.
- * Daarvoor gebruikt de bot de Overwatch Wiki (zie bot/lib/sync.js).
+ * Levert heroes, maps, gamemodes en spelersprofielen. GEEN seizoenen of events;
+ * die komen uit de Overwatch Wiki (zie shared/lib/sync.js).
  *
- * Limieten van de publieke instantie: 30 requests/seconde, max 10
- * gelijktijdige requests. Daarom cachen we alles in geheugen.
+ * Werkt in Node en in Cloudflare Workers. In Workers laat de `cf`-optie
+ * Cloudflare zelf cachen (cacheEverything), in Node wordt die optie genegeerd.
+ * Publieke limiet: 30 requests/seconde.
  */
 
-const BASE_URL = () => process.env.OVERFAST_BASE_URL || 'https://overfast-api.tekrop.fr';
-const USER_AGENT = '1KEY-OverwatchBot/1.0 (+intern gebruik)';
+const USER_AGENT = '1KEY-OverwatchBot/1.0 (intern gebruik)';
 
 export class OverfastError extends Error {
   constructor(message, status) {
@@ -23,8 +21,12 @@ export class OverfastError extends Error {
 
 const cache = new Map(); // url -> { at, ttl, data }
 
+function basisUrl() {
+  return (typeof process !== 'undefined' && process.env?.OVERFAST_BASE_URL) || 'https://overfast-api.tekrop.fr';
+}
+
 export async function owFetch(path, { ttl = 6 * 60 * 60 * 1000, timeout = 15000 } = {}) {
-  const url = path.startsWith('http') ? path : BASE_URL() + path;
+  const url = path.startsWith('http') ? path : basisUrl() + path;
   const hit = cache.get(url);
   if (hit && Date.now() - hit.at < hit.ttl) return hit.data;
 
@@ -35,10 +37,14 @@ export async function owFetch(path, { ttl = 6 * 60 * 60 * 1000, timeout = 15000 
     res = await fetch(url, {
       signal: controller.signal,
       headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
+      // Alleen zinvol in Workers; Node negeert onbekende opties.
+      cf: { cacheEverything: true, cacheTtl: Math.floor(ttl / 1000) },
     });
   } catch (err) {
     throw new OverfastError(
-      err.name === 'AbortError' ? 'OverFast API reageerde niet binnen 15 seconden' : `Netwerkfout naar OverFast API: ${err.message}`,
+      err.name === 'AbortError'
+        ? 'OverFast API reageerde niet binnen 15 seconden'
+        : `Netwerkfout naar OverFast API: ${err.message}`,
       null,
     );
   } finally {
@@ -51,13 +57,14 @@ export async function owFetch(path, { ttl = 6 * 60 * 60 * 1000, timeout = 15000 
 
   const data = await res.json();
   cache.set(url, { at: Date.now(), ttl, data });
+  if (cache.size > 500) cache.clear();
   return data;
 }
 
-/** Lijst van alle heroes (54 stuks, key/name/role/subrole/gamemodes). */
+/** Lijst van alle heroes (key/name/role/subrole/gamemodes). */
 export const getHeroes = () => owFetch('/heroes', { ttl: 24 * 60 * 60 * 1000 });
 
-/** Detail van één hero: abilities, perks, hitpoints, story. */
+/** Detail van één hero: abilities, perks, hitpoints. */
 export const getHero = (key) => owFetch(`/heroes/${encodeURIComponent(key)}`, { ttl: 24 * 60 * 60 * 1000 });
 
 /** Alle maps met gamemode(s), locatie en landcode. */
@@ -66,27 +73,16 @@ export const getMaps = () => owFetch('/maps', { ttl: 24 * 60 * 60 * 1000 });
 /** Alle gamemodes met beschrijving. */
 export const getGamemodes = () => owFetch('/gamemodes', { ttl: 24 * 60 * 60 * 1000 });
 
-/** Zoek een speler op naam; geeft { total, results: [...] } terug. */
-export const searchPlayer = (name) =>
-  owFetch(`/players?name=${encodeURIComponent(name)}`, { ttl: 10 * 60 * 1000 });
+/** Zoek een speler op naam of BattleTag; geeft { total, results: [...] }. */
+export const searchPlayer = (naam) => owFetch(`/players?name=${encodeURIComponent(naam)}`, { ttl: 10 * 60 * 1000 });
 
 /**
- * Volledige spelerdata. De summary-endpoint verwacht de player_id zoals de
- * zoekopdracht die teruggeeft; een BattleTag werkt alleen als die al bekend is.
- * Let op: /players/{id} geeft { summary, stats }, /players/{id}/summary geeft
- * het summary-object zelf.
+ * Spelersprofiel. Let op: /players/{id} geeft { summary, stats },
+ * /players/{id}/summary geeft het summary-object zelf.
  */
-export const getPlayer = (playerId) =>
-  owFetch(`/players/${encodeURIComponent(playerId)}/summary`, { ttl: 30 * 60 * 1000 });
+export const getPlayer = (playerId) => owFetch(`/players/${encodeURIComponent(playerId)}/summary`, { ttl: 30 * 60 * 1000 });
 
-/** Volledige carrière (summary + stats); zwaarder, dus alleen als je stats nodig hebt. */
-export const getPlayerCareer = (playerId) =>
-  owFetch(`/players/${encodeURIComponent(playerId)}`, { ttl: 30 * 60 * 1000 });
-
-/** Statuspagina van de publieke instantie (uptime/versie). */
-export const getStatus = () => owFetch('/heroes/stats', { ttl: 5 * 60 * 1000 });
-
-/** Zoekt een hero op (key of naam, hoofdletterongevoelig, ook deels). */
+/** Zoekt een hero op key of (deel van de) naam. */
 export async function resolveHero(query) {
   const heroes = await getHeroes();
   const q = String(query || '').trim().toLowerCase();
@@ -100,7 +96,7 @@ export async function resolveHero(query) {
   );
 }
 
-/** Zoekt een map op (key of naam, hoofdletterongevoelig, ook deels). */
+/** Zoekt een map op key of (deel van de) naam. */
 export async function resolveMap(query) {
   const maps = await getMaps();
   const q = String(query || '').trim().toLowerCase();

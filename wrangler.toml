@@ -1,0 +1,30 @@
+name = "overwatch-bot"
+main = "worker/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+# Geen preview-URL's: niet nodig, en het scheelt ruis bij elke deploy.
+preview_urls = false
+
+# Logs in het Cloudflare-dashboard (gratis).
+[observability]
+enabled = true
+
+# Twee crons: elke dag om 07:00 UTC de countdown verversen (09:00 in de zomer,
+# 08:00 in de winter) en op zondag 03:00 UTC de seizoensdata syncen.
+#
+# Let op: Cloudflare accepteert voor de dag-van-de-week geen '0'; gebruik de
+# naam (SUN) of 1-7. Met '0 3 * * 0' weigert de API de trigger met code 10100.
+[triggers]
+crons = ["0 7 * * *", "0 3 * * SUN"]
+
+[vars]
+# Publieke gegevens; mogen gewoon in dit bestand staan.
+APP_ID = "1561698349978226810"
+TRACKER_CHANNEL_ID = "1561705641855164436"
+
+# Opslag voor de gesynchroniseerde seizoensdata. Zonder KV werkt de bot ook,
+# maar dan wordt een sync niet bewaard en blijft worker/seed.js gelden.
+[[kv_namespaces]]
+binding = "DATA"
+id = "76e60792668d4e408572054edebbaa0a"

@@ -7,6 +7,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
 
+# De bot gebruikt de gedeelde command-laag in shared/.
+COPY shared ./shared
 COPY bot ./bot
 
 # De bot leest .env via een absoluut pad naast package.json. In Docker is dat

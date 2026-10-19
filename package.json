@@ -12,9 +12,13 @@
     "bot": "node bot/index.js",
     "bot:dev": "nodemon bot/index.js",
     "deploy": "node bot/deploy-commands.js",
-    "sync": "node bot/lib/sync.js",
+    "sync": "node bot/sync.js",
     "smoke": "node bot/test/smoke.js",
-    "whereami": "node bot/lib/inspect.js"
+    "whereami": "node bot/lib/inspect.js",
+    "smoke:worker": "node worker/test/local.js",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy",
+    "verify": "npm run smoke && npm run smoke:worker"
   },
   "author": "1KEY ICT Solutions",
   "license": "MIT",
@@ -23,6 +27,7 @@
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.0"
+    "nodemon": "^3.0.0",
+    "wrangler": "^4.151.2"
   }
 }

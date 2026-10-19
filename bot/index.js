@@ -1,25 +1,28 @@
 /**
- * Overwatch-bot voor Discord.
+ * Overwatch-bot via de Discord Gateway (discord.js).
  *
- * Draaien: npm run bot   (na npm run deploy om de slash commands te registreren)
+ * Draaien: npm run bot
  *
- * Draait via de Discord Gateway (discord.js), dus geen publieke URL of
- * ngrok nodig zoals bij de HTTP-interactions voorbeeldapp in de hoofdmap.
+ * Deze variant houdt zelf een verbinding met Discord open en moet dus ergens
+ * aan blijven staan. De Cloudflare Worker (worker/index.js) gebruikt exact
+ * dezelfde command-code maar dan via HTTP-interactions.
  */
 
-import { readdir } from 'node:fs/promises';
-import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
-import { Client, Collection, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
-import { huidigSeizoen } from './lib/season.js';
-import { seizoenEmbed, bronVoet, TRACKER_MARKER } from './lib/embed.js';
+import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
+import { COMMANDS, vindCommand, optiesVan } from '../shared/commands/index.js';
+import { trackerEmbed, TRACKER_MARKER } from '../shared/lib/tracker.js';
+import { gebruikBestandsdataset } from './node-store.js';
 
 const HIER = path.dirname(fileURLToPath(import.meta.url));
 
 // .env expliciet naast package.json zoeken, zodat de bot ook werkt als hij
 // vanuit een andere map wordt gestart (Taakplanner, PM2, systemd).
 dotenv.config({ path: path.join(HIER, '..', '.env') });
+
+gebruikBestandsdataset();
 
 const TRACKER_CHANNEL_ID = process.env.TRACKER_CHANNEL_ID || null;
 const TRACKER_UUR = Number(process.env.TRACKER_UUR ?? 9); // lokale tijd
@@ -30,21 +33,9 @@ if (!process.env.DISCORD_TOKEN) {
 }
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-client.commands = new Collection();
-
-// Commands inladen
-const commandBestanden = (await readdir(path.join(HIER, 'commands'))).filter((f) => f.endsWith('.js'));
-for (const bestand of commandBestanden) {
-  const module = await import(pathToFileURL(path.join(HIER, 'commands', bestand)).href);
-  if (module.data?.name && typeof module.execute === 'function') {
-    client.commands.set(module.data.name, module);
-  } else {
-    console.warn(`Command ${bestand} overgeslagen: geen data/execute export.`);
-  }
-}
 
 client.once(Events.ClientReady, async (c) => {
-  console.log(`Ingelogd als ${c.user.tag} met ${client.commands.size} commands: ${[...client.commands.keys()].join(', ')}`);
+  console.log(`Ingelogd als ${c.user.tag} met ${COMMANDS.length} commands: ${COMMANDS.map((x) => x.definition.name).join(', ')}`);
   if (TRACKER_CHANNEL_ID) {
     await updateTracker(c).catch((err) => console.error('Tracker bijwerken mislukt:', err.message));
     planDagelijkseTracker(c);
@@ -55,10 +46,10 @@ client.once(Events.ClientReady, async (c) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isAutocomplete()) {
-    const command = client.commands.get(interaction.commandName);
+    const command = vindCommand(interaction.commandName);
     if (!command?.autocomplete) return;
     try {
-      await command.autocomplete(interaction);
+      await interaction.respond(await command.autocomplete({ focused: interaction.options.getFocused() }));
     } catch (err) {
       console.error(`Autocomplete ${interaction.commandName} mislukt:`, err.message);
       await interaction.respond([]).catch(() => {});
@@ -67,12 +58,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 
   if (!interaction.isChatInputCommand()) return;
-  const command = client.commands.get(interaction.commandName);
+  const command = vindCommand(interaction.commandName);
   if (!command) return;
 
   try {
     await interaction.deferReply();
-    await command.execute(interaction);
+    await interaction.editReply(await command.run({ opties: optiesVan(interaction) }));
   } catch (err) {
     console.error(`Command ${interaction.commandName} mislukt:`, err);
     const bericht = `Er ging iets mis: ${err.message}`;
@@ -86,14 +77,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 // ------------------------------------------------------------- tracker
 
-async function trackerEmbed() {
-  const { huidig, data } = await huidigSeizoen();
-  if (!huidig) throw new Error('Geen huidig seizoen in de dataset; draai `npm run sync`');
-  const embed = seizoenEmbed(huidig, { bron: bronVoet(data), totaal: data.seasons.length });
-  embed.setFooter({ text: `${embed.data.footer?.text ?? ''} | ${TRACKER_MARKER}` });
-  return embed;
-}
-
 async function updateTracker(c) {
   const kanaal = await c.channels.fetch(TRACKER_CHANNEL_ID).catch(() => null);
   if (!kanaal?.isTextBased()) throw new Error(`Kanaal ${TRACKER_CHANNEL_ID} niet gevonden of geen tekstkanaal`);
@@ -101,9 +84,7 @@ async function updateTracker(c) {
   const embed = await trackerEmbed();
   const berichten = await kanaal.messages.fetch({ limit: 50 });
   const bestaand = berichten.find(
-    (m) =>
-      m.author.id === c.user.id &&
-      m.embeds.some((e) => (e.footer?.text ?? '').includes(TRACKER_MARKER)),
+    (m) => m.author.id === c.user.id && m.embeds.some((e) => (e.footer?.text ?? '').includes(TRACKER_MARKER)),
   );
 
   if (bestaand) {

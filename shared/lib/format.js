@@ -1,11 +1,14 @@
-/** Opmaak-hulpjes: datums in het Nederlands, voortgangsbalken, duur. */
+/**
+ * Opmaak-hulpjes: Nederlandse datums, voortgangsbalken, duur.
+ * Geen Node- of discord.js-afhankelijkheden: werkt in Node én in een Worker.
+ */
 
 const MAANDEN = [
   'januari', 'februari', 'maart', 'april', 'mei', 'juni',
   'juli', 'augustus', 'september', 'oktober', 'november', 'december',
 ];
 
-/** '2026-10-06' -> '6 oktober 2026'. Werkt op UTC-delen om tijdzone-drift te voorkome n. */
+/** '2026-10-06' -> '6 oktober 2026' (UTC-delen, dus geen tijdzone-drift). */
 export function datumNL(iso) {
   if (!iso) return 'onbekend';
   const [y, m, d] = iso.split('-').map(Number);
@@ -19,7 +22,7 @@ export function maandNL(iso) {
   return `${MAANDEN[m - 1]} ${y}`;
 }
 
-/** Aantal hele dagen tussen twee datums (UTC-datumdelen, dus geen zomertijdgedoe). */
+/** Aantal hele dagen tussen twee datums. */
 export function dagenTussen(van, tot) {
   const a = Date.UTC(van.getUTCFullYear(), van.getUTCMonth(), van.getUTCDate());
   const b = Date.UTC(tot.getUTCFullYear(), tot.getUTCMonth(), tot.getUTCDate());
@@ -47,12 +50,13 @@ export function duurNL(ms) {
   return delen.join(' ') || '0 minuten';
 }
 
-/** Discord-relatieve tijd, bv. <t:1234567890:R> */
-export function relatieveTijd(date) {
-  return `<t:${Math.floor(new Date(date).getTime() / 1000)}:R>`;
+/** Knipt tekst af op de limieten die Discord aan embeds stelt. */
+export function kort(tekst, max = 1024) {
+  const s = String(tekst ?? '');
+  return s.length <= max ? s : `${s.slice(0, max - 1)}…`;
 }
 
-/** Discord-relatieve tijd met volledige datum, bv. <t:...:f> */
-export function volledigeTijd(date) {
-  return `<t:${Math.floor(new Date(date).getTime() / 1000)}:f>`;
+/** ISO-datum van vandaag (UTC). */
+export function vandaagISO(nu = new Date()) {
+  return nu.toISOString().slice(0, 10);
 }

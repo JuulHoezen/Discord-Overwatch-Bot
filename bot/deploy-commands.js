@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 /**
- * Registreert de slash commands bij Discord.
+ * Registreert de slash commands bij Discord (platte JSON uit shared/commands).
  *
  * Draaien: npm run deploy
  *
- * Met DISCORD_GUILD_ID in .env worden de commands op die ene server gezet
- * (direct zichtbaar). Zonder dat ID worden ze globaal geregistreerd, wat tot
- * een uur kan duren voor ze verschijnen.
+ * Met DISCORD_GUILD_ID in .env komen de commands op die ene server (direct
+ * zichtbaar). Zonder dat ID worden ze globaal geregistreerd, wat tot een uur
+ * kan duren. Voor de Cloudflare-versie is dit niet nodig zolang je dezelfde
+ * app gebruikt: de commands staan dan al geregistreerd.
  */
 
-import { readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import { REST, Routes } from 'discord.js';
+import { commandDefinities } from '../shared/commands/index.js';
 
 const HIER = path.dirname(fileURLToPath(import.meta.url));
-
-// .env expliciet naast package.json zoeken, niet in de map waar je toevallig staat.
 dotenv.config({ path: path.join(HIER, '..', '.env') });
+
 const APP_ID = process.env.APP_ID;
 const GUILD_ID = process.env.DISCORD_GUILD_ID || null;
 const TOKEN = process.env.DISCORD_TOKEN;
@@ -28,13 +28,7 @@ if (!APP_ID || !TOKEN) {
   process.exit(1);
 }
 
-const bestanden = (await readdir(path.join(HIER, 'commands'))).filter((f) => f.endsWith('.js'));
-const commands = [];
-for (const bestand of bestanden) {
-  const module = await import(pathToFileURL(path.join(HIER, 'commands', bestand)).href);
-  if (module.data?.toJSON) commands.push(module.data.toJSON());
-}
-
+const commands = commandDefinities();
 const rest = new REST().setToken(TOKEN);
 
 try {
